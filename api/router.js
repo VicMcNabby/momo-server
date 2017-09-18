@@ -3,6 +3,7 @@ const queries = require('../db/queries')
 const bcrypt = require('bcrypt');
 const valid = require('./validate');
 const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
 const router = express.Router();
 
@@ -31,6 +32,12 @@ router.get('/comments/:id', (req, res, next) => {
   });
 });
 
+router.get('/posts/comments', (req, res, next) => {
+  queries.getCommentsAndPosts(req.params.id).then(posts => {
+    res.json(posts);
+  });
+});
+
 router.get('/posts/:id', (req, res, next) => {
   queries.getPostById(req.params.id).then(post => {
     res.json(post);
@@ -39,6 +46,12 @@ router.get('/posts/:id', (req, res, next) => {
 
 router.post('/posts', (req, res, next) => {
   queries.createPost(req.body).then(response => {
+    res.json(response[0]);
+  });
+});
+
+router.post('/comments', (req, res, next) => {
+  queries.createComment(req.body).then(response => {
     res.json(response[0]);
   });
 });
@@ -52,9 +65,9 @@ router.post('/auth/login', (req, res, next) => {
             jwt.sign({
               id: user.id
             }, process.env.TOKEN_SECRET, (err, token) => {
-              console.log(err, token);
+              console.log('err and token: ', err, token);
               res.json({
-                //message: `Logged in as ${user.name}.`,
+                message: `Logged in`,
                 token,
                 id: user.id
               });

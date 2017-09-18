@@ -20,13 +20,22 @@ module.exports = {
   getCommentsByPostId(id) {
     return knex('comments')
       .join('posts', 'posts.id', 'comments.posts_id')
-      .select('comments.comment as comment', 'comments.mom_id as mom_id')
+      .select('posts.id as post_id', 'comments.comment as comment', 'comments.mom_id as mom_id')
       .where('posts_id', id)
+  },
+  getCommentsAndPosts() {
+    return knex('posts')
+      .join('comments', 'comments.id', 'posts.id')
+      .select('posts.post as post', 'posts.id as post_id', 'comments.comment as comment', 'comments.mom_id as mom_id')
+
   },
   getPostById(id) {
     return knex('posts').where('id', id)
   },
   createPost(post) {
     return knex('posts').insert(post, '*')
+  },
+  createComment(comment) {
+    return knex('comments').insert(comment, '*')
   }
 }
